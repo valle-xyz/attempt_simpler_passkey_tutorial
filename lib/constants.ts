@@ -1,0 +1,1 @@
+export const STORAGE_PASSKEY_LIST_KEY = "__PASSKEY_SAFE_DEMO_APP__";
