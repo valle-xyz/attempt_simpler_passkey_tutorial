@@ -21,6 +21,8 @@ export default function Home() {
   const [safeAddress, setSafeAddress] = useState<string>();
   const [isSafeDeployed, setIsSafeDeployed] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string>();
+  const [jiffyscanUrl, setJiffyscanUrl] = useState<string>();
+  const [isTransactionPending, setIsTransactionPending] = useState(false);
 
   useEffect(() => {
     const passkey = loadPassKey();
@@ -51,6 +53,8 @@ export default function Home() {
       console.log("No passkey selected");
       return;
     }
+
+    setIsTransactionPending(true);
 
     console.log("Sending transaction...");
     const safe4337Pack = await Safe4337Pack.init({
@@ -86,7 +90,7 @@ export default function Home() {
         safeOperation
       );
 
-      console.log("SafeOperation", signedSafeOperation);
+      console.log("SafeOperation:", signedSafeOperation);
 
       const userOperationHash = await safe4337Pack.executeTransaction({
         executable: signedSafeOperation,
@@ -94,6 +98,7 @@ export default function Home() {
 
       const jiffyscanUrl = `https://jiffyscan.xyz/userOpHash/${userOperationHash}?network=${CHAIN_NAME}`;
       console.log("jiffyscanUrl: ", jiffyscanUrl);
+      setJiffyscanUrl(jiffyscanUrl);
 
       const transactionHash = await getTransactionHash(
         safe4337Pack,
@@ -118,32 +123,85 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm ">
-        <p>Hello</p>
+        <h1 className="text-4xl font-bold mb-8">
+          Deploy a Safe with Passkey and 4337 module
+        </h1>
+        <p>
+          Hey there and welcome to this demo on how tao sign a Safe transaction
+          with a passkey and the 4337 module.
+        </p>
+        <p className="mb-4">
+          We will start by creating a passkey, which will be stored in the local
+          storage.
+        </p>
         {selectedPasskey ? (
           <>
-            <div className="flex flex-col items-center justify-between">
-              <p>Passkey: {selectedPasskey.rawId}</p>
+            <div className="flex flex-col items-center justify-between mb-8">
+              <p>Great! You created a passkey.</p>
+              <p>Passkey ID: {selectedPasskey.rawId}</p>
             </div>
-            <div className="flex flex-col items-center justify-between">
+            <div className="flex flex-col items-center justify-between mb-8">
+              <p className="mb-4">
+                With this passkey, we can precalculate the Safe address
+                (counterfactual deployment). This is useful if you want to
+                prefund your Safe before it is deployed.
+              </p>
               <p>Safe Address: {safeAddress}</p>
               <p>Safe Deployed: {isSafeDeployed ? "Yes" : "No"}</p>
             </div>
 
             <div className="flex flex-col items-center justify-between">
-              <button
-                onClick={handleSendTransaction}
-                className="px-4 py-2 text-white bg-blue-500 rounded-md items-center"
-              >
-                Send Transaction
-              </button>
-              {transactionHash && (
-                <a
-                  href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              <p className="mb-8">
+                Now you can sign a transaction &quot;from&quot; your Safe. The
+                paymaster will pay for this transaction. As it is your first
+                transaction, this transaction will automatically deploy your
+                Safe.
+              </p>
+
+              {!isTransactionPending && (
+                <button
+                  onClick={handleSendTransaction}
+                  className="px-4 py-2 text-white bg-blue-500 rounded-md items-center"
                 >
-                  View Transaction {transactionHash}
-                </a>
+                  Send Transaction
+                </button>
+              )}
+
+              {jiffyscanUrl && (
+                <>
+                  <p className="mb-8">
+                    Before the transaction settles, you can already see the user
+                    operation, before a bundler includes it.
+                  </p>
+                  <p>
+                    <a
+                      href={jiffyscanUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline-current text-blue-500 mb-4"
+                    >
+                      {jiffyscanUrl}
+                    </a>
+                  </p>
+                </>
+              )}
+
+              {transactionHash && isTransactionPending && (
+                <p>
+                  Transaction successful:{" "}
+                  <a
+                    href={`https://sepolia.etherscan.io/tx/${transactionHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline-current text-blue-500 mb-4"
+                  >
+                    {transactionHash}
+                  </a>
+                </p>
+              )}
+
+              {isTransactionPending && !transactionHash && (
+                <p>Transaction pending...</p>
               )}
             </div>
           </>
@@ -152,7 +210,7 @@ export default function Home() {
             onClick={handleCreatePasskey}
             className="px-4 py-2 text-white bg-blue-500 rounded-md items-center"
           >
-            Create Passkey
+            Create a Passkey
           </button>
         )}
       </div>
