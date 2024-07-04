@@ -206,12 +206,14 @@ export default function Home() {
             </div>
           </>
         ) : (
-          <button
-            onClick={handleCreatePasskey}
-            className="px-4 py-2 text-white bg-blue-500 rounded-md items-center"
-          >
-            Create a Passkey
-          </button>
+          <div className="flex flex-col items-center justify-between mb-8">
+            <button
+              onClick={handleCreatePasskey}
+              className="px-4 py-2 text-white bg-blue-500 rounded-md items-center"
+            >
+              Create a Passkey
+            </button>
+          </div>
         )}
       </div>
     </main>
