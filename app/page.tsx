@@ -142,7 +142,7 @@ export default function Home() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  View Transaction
+                  View Transaction {transactionHash}
                 </a>
               )}
             </div>
