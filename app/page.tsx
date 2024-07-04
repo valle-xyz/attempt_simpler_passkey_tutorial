@@ -31,6 +31,12 @@ export default function Home() {
     }
   }, []);
 
+  const handleCreatePasskey = async () => {
+    const passkey = await createPassKey();
+    setSelectedPasskey(passkey);
+    storePassKey(passkey);
+  };
+
   const handleSelectPasskey = async (passkey: PasskeyArgType) => {
     setSelectedPasskey(passkey);
 
@@ -112,12 +118,6 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     }
-  };
-
-  const handleCreatePasskey = async () => {
-    const passkey = await createPassKey();
-    setSelectedPasskey(passkey);
-    storePassKey(passkey);
   };
 
   return (
