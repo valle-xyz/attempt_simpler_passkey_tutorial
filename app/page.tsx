@@ -68,12 +68,12 @@ export default function Home() {
       signer: selectedPasskey,
       bundlerUrl: BUNDLER_URL,
       paymasterOptions: {
-        isSponsored: true,
+        isSponsored: true, // Paymaster will pay for the transaction (and has unlimited funds on Sepolia)
         paymasterUrl: PAYMASTER_URL,
         paymasterAddress,
       },
       options: {
-        owners: [],
+        owners: [], // The passkey is the only owner
         threshold: 1,
       },
     });
