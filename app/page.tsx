@@ -134,6 +134,11 @@ export default function Home() {
           We will start by creating a passkey, which will be stored in the local
           storage.
         </p>
+        <p className="mb-4">
+          <b>Warning!</b> This demo does not work with Firefox due to a know bug
+          that will be resolved with the next release. We recommend Chrome or
+          Chromium as a browser.
+        </p>
         {selectedPasskey ? (
           <>
             <div className="flex flex-col items-center justify-between mb-8">
